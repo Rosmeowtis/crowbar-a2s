@@ -37,7 +37,11 @@ features = ["derive"]
 optional = true
 
 [features]
-default = ["sync"]
+default = ["sync", "info", "players", "rules"]
 serialization = ["serde"]
 sync = []
 async = ["tokio"]
+# Deciding whether to provide the following three methods
+info = []
+players = []
+rules = []

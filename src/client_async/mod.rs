@@ -1,11 +1,15 @@
 use crate::constants::*;
 use crate::errors::{Error, Result};
-use crate::types::{Info, Player, Rule, INFO_REQUEST, PLAYER_REQUEST, RULES_REQUEST};
+#[cfg(feature = "info")]
+use crate::types::{Info, INFO_REQUEST};
+#[cfg(feature = "players")]
+use crate::types::{Player, PLAYER_REQUEST};
+#[cfg(feature = "rules")]
+use crate::types::{Rule, RULES_REQUEST};
 use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
 use bzip2::read::BzDecoder;
 use crc::crc32;
 use std::io::{Cursor, Read, Write};
-use std::net::{ToSocketAddrs, UdpSocket};
 use std::ops::Deref;
 use std::time::Duration;
 use tokio::net::{ToSocketAddrs, UdpSocket};
@@ -82,8 +86,8 @@ pub struct A2SClientAsync {
 }
 
 impl A2SClientAsync {
-    pub async fn new() -> Result<A2SClient> {
-        Ok(A2SClientAsync {
+    pub async fn new() -> Result<Self> {
+        Ok(Self {
             timeout: Duration::new(15, 0), // todo make it configurable
             max_size: 1400,
             app_id: 0,
@@ -240,6 +244,7 @@ impl A2SClientAsync {
 }
 
 impl A2SClientAsync {
+    #[cfg(feature = "info")]
     pub async fn info<A: ToSocketAddrs>(&self, addr: A) -> Result<Info> {
         let response = self.send(&INFO_REQUEST, &addr).await?;
 
@@ -259,12 +264,12 @@ impl A2SClientAsync {
             Info::from_cursor(Cursor::new(response))
         }
     }
-
+    #[cfg(feature = "players")]
     pub async fn players<A: ToSocketAddrs>(&self, addr: A) -> Result<Vec<Player>> {
         let data = self.do_challenge_request(addr, &PLAYER_REQUEST).await?;
         Player::from_cursor(Cursor::new(data), self.app_id)
     }
-
+    #[cfg(feature = "rules")]
     pub async fn rules<A: ToSocketAddrs>(&self, addr: A) -> Result<Vec<Rule>> {
         let data = self.do_challenge_request(addr, &RULES_REQUEST).await?;
         Rule::from_cursor(Cursor::new(data))
