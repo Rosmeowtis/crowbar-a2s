@@ -1,10 +1,10 @@
 use crate::constants::*;
 use crate::errors::{Error, Result};
-#[cfg(feature = "info")]
+
 use crate::types::{Info, INFO_REQUEST};
-#[cfg(feature = "players")]
+
 use crate::types::{Player, PLAYER_REQUEST};
-#[cfg(feature = "rules")]
+
 use crate::types::{Rule, RULES_REQUEST};
 use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
 use bzip2::read::BzDecoder;
@@ -236,7 +236,6 @@ impl A2SClient {
 
 // implement info, players, rules methods
 impl A2SClient {
-    #[cfg(feature = "info")]
     pub fn info<A: ToSocketAddrs>(&self, addr: A) -> Result<Info> {
         let response = self.send(&INFO_REQUEST, &addr)?;
 
@@ -256,12 +255,12 @@ impl A2SClient {
             Info::from_cursor(Cursor::new(response))
         }
     }
-    #[cfg(feature = "players")]
+
     pub fn players<A: ToSocketAddrs>(&self, addr: A) -> Result<Vec<Player>> {
         let data = self.do_challenge_request(addr, &PLAYER_REQUEST)?;
         Player::from_cursor(Cursor::new(data), self.app_id)
     }
-    #[cfg(feature = "rules")]
+
     pub fn rules<A: ToSocketAddrs>(&self, addr: A) -> Result<Vec<Rule>> {
         let data = self.do_challenge_request(addr, &RULES_REQUEST)?;
         Rule::from_cursor(Cursor::new(data))

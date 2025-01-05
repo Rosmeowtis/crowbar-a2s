@@ -1,10 +1,10 @@
 use crate::constants::*;
 use crate::errors::{Error, Result};
-#[cfg(feature = "info")]
+
 use crate::types::{Info, INFO_REQUEST};
-#[cfg(feature = "players")]
+
 use crate::types::{Player, PLAYER_REQUEST};
-#[cfg(feature = "rules")]
+
 use crate::types::{Rule, RULES_REQUEST};
 use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
 use bzip2::read::BzDecoder;
@@ -244,7 +244,6 @@ impl A2SClientAsync {
 }
 
 impl A2SClientAsync {
-    #[cfg(feature = "info")]
     pub async fn info<A: ToSocketAddrs>(&self, addr: A) -> Result<Info> {
         let response = self.send(&INFO_REQUEST, &addr).await?;
 
@@ -264,12 +263,12 @@ impl A2SClientAsync {
             Info::from_cursor(Cursor::new(response))
         }
     }
-    #[cfg(feature = "players")]
+
     pub async fn players<A: ToSocketAddrs>(&self, addr: A) -> Result<Vec<Player>> {
         let data = self.do_challenge_request(addr, &PLAYER_REQUEST).await?;
         Player::from_cursor(Cursor::new(data), self.app_id)
     }
-    #[cfg(feature = "rules")]
+
     pub async fn rules<A: ToSocketAddrs>(&self, addr: A) -> Result<Vec<Rule>> {
         let data = self.do_challenge_request(addr, &RULES_REQUEST).await?;
         Rule::from_cursor(Cursor::new(data))

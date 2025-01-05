@@ -29,7 +29,7 @@ optional = true
 
 [dev-dependencies.tokio]
 version = "1"
-features = ["macros", "rt"]
+features = ["macros", "rt-multi-thread"]
 
 [dependencies.serde]
 version = "1"
@@ -37,11 +37,7 @@ features = ["derive"]
 optional = true
 
 [features]
-default = ["sync", "info", "players", "rules"]
+default = ["sync"]
 serialization = ["serde"]
 sync = []
 async = ["tokio"]
-# Deciding whether to provide the following three methods
-info = []
-players = []
-rules = []

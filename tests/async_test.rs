@@ -1,5 +1,5 @@
 #[cfg(feature = "async")]
-use a2s::A2SClientAsync;
+use crowbar_a2s::A2SClientAsync;
 #[cfg(feature = "async")]
 use futures::future;
 #[cfg(feature = "async")]
@@ -13,7 +13,7 @@ use tokio::try_join;
 #[tokio::test]
 async fn test_async_multiplequeries() {
     let address = "74.91.118.209:27015";
-    let client = A2SClient::new().await.unwrap();
+    let client = A2SClientAsync::new().await.unwrap();
     let info = client.info(&address);
     let rules = client.rules(&address);
     let players = client.players(&address);

@@ -1,17 +1,15 @@
-#[cfg(feature = "info")]
 pub mod info;
-#[cfg(feature = "players")]
+
 pub mod players;
-#[cfg(feature = "rules")]
+
 pub mod rules;
 use crate::errors::Result;
 use std::io::{Cursor, Read};
 
-#[cfg(feature = "info")]
 pub use crate::types::info::{ExtendedServerInfo, Info, INFO_REQUEST};
-#[cfg(feature = "players")]
+
 pub use crate::types::players::{Player, TheShipPlayer, PLAYER_REQUEST};
-#[cfg(feature = "rules")]
+
 pub use crate::types::rules::{Rule, RULES_REQUEST};
 
 trait ReadCString {
