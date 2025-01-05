@@ -11,10 +11,13 @@ pub use crate::client::A2SClient;
 #[cfg(feature = "async")]
 pub use crate::client_async::A2SClientAsync;
 use crate::errors::Result;
+use crc::Crc;
 use std::time::Duration;
 
 #[cfg(feature = "sync")]
 use std::net::UdpSocket;
+
+pub const CRC32: crc::Crc<u32> = Crc::<u32>::new(&crc::CRC_32_ISO_HDLC);
 
 pub struct Builder {
     max_size: usize,

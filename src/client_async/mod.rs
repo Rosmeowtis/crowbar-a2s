@@ -5,10 +5,10 @@ use crate::types::{Info, INFO_REQUEST};
 
 use crate::types::{Player, PLAYER_REQUEST};
 
+use crate::CRC32;
 use crate::types::{Rule, RULES_REQUEST};
 use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
 use bzip2::read::BzDecoder;
-use crc::crc32;
 use std::io::{Cursor, Read, Write};
 use std::ops::Deref;
 use std::time::Duration;
@@ -214,7 +214,7 @@ impl A2SClientAsync {
 
                 BzDecoder::new(aggregation.deref()).read_exact(&mut decompressed)?;
 
-                if crc32::checksum_ieee(&decompressed) != checksum {
+                if CRC32.checksum(&decompressed) != checksum {
                     return Err(Error::CheckSumMismatch);
                 }
 

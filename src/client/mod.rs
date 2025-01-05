@@ -5,10 +5,10 @@ use crate::types::{Info, INFO_REQUEST};
 
 use crate::types::{Player, PLAYER_REQUEST};
 
+use crate::CRC32;
 use crate::types::{Rule, RULES_REQUEST};
 use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
 use bzip2::read::BzDecoder;
-use crc::crc32;
 use std::io::{Cursor, Read, Write};
 use std::net::{ToSocketAddrs, UdpSocket};
 use std::ops::Deref;
@@ -85,7 +85,7 @@ macro_rules! read_buffer_offset {
 /// let result = client
 ///     .info(&std::env::var("CARGO_TEST_SRCDS_ADDR").unwrap())
 ///     .unwrap();
-/// 
+///
 /// println!("Sync: {:?}", result);
 /// ```
 pub struct A2SClient {
@@ -202,7 +202,7 @@ impl A2SClient {
 
                 BzDecoder::new(aggregation.deref()).read_exact(&mut decompressed)?;
 
-                if crc32::checksum_ieee(&decompressed) != checksum {
+                if CRC32.checksum(&decompressed) != checksum {
                     return Err(Error::CheckSumMismatch);
                 }
 
