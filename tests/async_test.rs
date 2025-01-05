@@ -1,6 +1,4 @@
 #[cfg(feature = "async")]
-use crowbar_a2s::A2SClientAsync;
-#[cfg(feature = "async")]
 use futures::future;
 #[cfg(feature = "async")]
 use std::net::SocketAddr;
@@ -13,7 +11,7 @@ use tokio::try_join;
 #[tokio::test]
 async fn test_async_multiplequeries() {
     let address = "74.91.118.209:27015";
-    let client = A2SClientAsync::new().await.unwrap();
+    let client = crowbar_a2s::Builder::new().build_async().unwrap();
     let info = client.info(&address);
     let rules = client.rules(&address);
     let players = client.players(&address);
@@ -24,7 +22,7 @@ async fn test_async_multiplequeries() {
 #[cfg(feature = "async")]
 #[tokio::test]
 async fn test_async_multipleservers() {
-    let client = A2SClientAsync::new().await.unwrap();
+    let client = crowbar_a2s::Builder::new().build_async().unwrap();
     let addresses = vec![
         "coralie.megabrutal.com:27015",
         "play.lifeisabug.com:27015",

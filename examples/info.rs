@@ -3,7 +3,12 @@
 
 #[cfg(all(not(feature = "async"), feature = "sync"))]
 fn main() {
-    let client = crowbar_a2s::A2SClient::new().unwrap();
+    use std::time::Duration;
+
+    let client = crowbar_a2s::Builder::new()
+        .timeout(Duration::new(5, 0))
+        .build_sync()
+        .unwrap();
 
     let result = client
         .info(&std::env::var("CARGO_TEST_SRCDS_ADDR").unwrap())
@@ -15,7 +20,10 @@ fn main() {
 #[cfg(all(not(feature = "sync"), feature = "async"))]
 #[tokio::main]
 async fn main() {
-    let client = crowbar_a2s::A2SClientAsync::new().await.unwrap();
+    let client = crowbar_a2s::Builder::new()
+        .timeout(Duration::new(5, 0))
+        .build_async()
+        .unwrap();
 
     let result = client
         .info(&std::env::var("CARGO_TEST_SRCDS_ADDR").unwrap())

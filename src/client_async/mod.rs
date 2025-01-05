@@ -79,21 +79,34 @@ macro_rules! future_timeout {
     };
 }
 
+/// A2SClient is a synchronous client for the A2S protocol.
+/// It is used to query Source but not GoldSrc servers.
+///
+/// # Example
+///
+/// ```rust
+/// use crowbar_a2s::{Builder, A2SClientAsync};
+///
+/// let client: A2SClientAsync = crowbar_a2s::Builder::new()
+///     .max_size(1400)
+///     .app_id(0)
+///     .timeout(Duration::new(5, 0))
+///     .build_async()
+///     .unwrap();
+/// let result = client
+///     .info(&std::env::var("CARGO_TEST_SRCDS_ADDR").unwrap())
+///     .unwrap();
+///
+/// println!("Sync: {:?}", result);
+/// ```
 pub struct A2SClientAsync {
-    timeout: Duration,
-    max_size: usize,
-    app_id: u16,
+    pub(crate) timeout: Duration,
+    pub(crate) max_size: usize,
+    /// steam app id, if you want to query _The Ship_ servers' players, you need to set this to 2400
+    pub(crate) app_id: u16,
 }
 
 impl A2SClientAsync {
-    pub async fn new() -> Result<Self> {
-        Ok(Self {
-            timeout: Duration::new(15, 0), // todo make it configurable
-            max_size: 1400,
-            app_id: 0,
-        })
-    }
-
     pub fn max_size(&mut self, size: usize) -> &mut Self {
         self.max_size = size;
         self

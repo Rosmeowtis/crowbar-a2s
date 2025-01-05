@@ -12,7 +12,6 @@ use crc::crc32;
 use std::io::{Cursor, Read, Write};
 use std::net::{ToSocketAddrs, UdpSocket};
 use std::ops::Deref;
-use std::time::Duration;
 
 macro_rules! read_buffer_offset {
     ($buf:expr, $offset:expr, i8) => {
@@ -69,27 +68,34 @@ macro_rules! read_buffer_offset {
     };
 }
 
+/// A2SClient is a synchronous client for the A2S protocol.
+/// It is used to query Source but not GoldSrc servers.
+///
+/// # Example
+///
+/// ```rust
+/// use crowbar_a2s::{Builder, A2SClient};
+///
+/// let client: A2SClient = crowbar_a2s::Builder::new()
+///     .max_size(1400)
+///     .app_id(0)
+///     .timeout(Duration::new(5, 0))
+///     .build_sync()
+///     .unwrap();
+/// let result = client
+///     .info(&std::env::var("CARGO_TEST_SRCDS_ADDR").unwrap())
+///     .unwrap();
+/// 
+/// println!("Sync: {:?}", result);
+/// ```
 pub struct A2SClient {
-    socket: UdpSocket,
-    max_size: usize,
-    app_id: u16,
+    pub(crate) socket: UdpSocket,
+    pub(crate) max_size: usize,
+    /// steam app id, if you want to query _The Ship_ servers' players, you need to set this to 2400
+    pub(crate) app_id: u16,
 }
 
 impl A2SClient {
-    pub fn new() -> Result<Self> {
-        let socket = UdpSocket::bind("0.0.0.0:0")?;
-        let timeout = Duration::new(5, 0); // todo make this configurable
-
-        socket.set_read_timeout(Some(timeout))?;
-        socket.set_write_timeout(Some(timeout))?;
-
-        Ok(Self {
-            socket,
-            max_size: 1400,
-            app_id: 0,
-        })
-    }
-
     pub fn max_size(&mut self, size: usize) -> &mut Self {
         self.max_size = size;
         self
