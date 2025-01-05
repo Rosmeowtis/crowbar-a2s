@@ -4,14 +4,17 @@ description = "Rust implementation of Source A2S query"
 version = "0.6.0"
 license = "MIT"
 repository = "https://github.com/Rosmeowtis/crowbar-a2s"
+maintainers = ["Rosmeowtis <rosmeowtis@outlook.com>"]
 authors = [
-    "rumblefrog <contact@rumblefrog.me>",
-    "Rosmeowtis <rosmeowtis@outlook.com>",
+    "Rosmeowtis <rosmeowtis@outlook.com>", # fork author
+    "rumblefrog <contact@rumblefrog.me>", # original author
 ]
 edition = "2021"
 keywords = ["steam", "query"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[badges]
+maintainance = { status = "passively-maintained" }
 
 [dependencies]
 byteorder = "1"
