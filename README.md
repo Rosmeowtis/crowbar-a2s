@@ -2,6 +2,8 @@
 
 An implementation of [Source A2S Queries](https://developer.valvesoftware.com/wiki/Server_queries)
 
+Forked from <https://github.com/rumblefrog/a2s-rs>
+
 **Note: Only supports Source engine and above, Goldsource is not supported**
 
 ## Usage
