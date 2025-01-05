@@ -1,19 +1,11 @@
-use std::io::Cursor;
-#[cfg(not(feature = "async"))]
-use std::net::ToSocketAddrs;
-
+use crate::errors::{Error, Result};
+use crate::types::ReadCString;
 use byteorder::{LittleEndian, ReadBytesExt};
-
-#[cfg(feature = "async")]
-use tokio::net::ToSocketAddrs;
-
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
+use std::io::Cursor;
 
-use crate::errors::{Error, Result};
-use crate::{A2SClient, ReadCString};
-
-const RULES_REQUEST: [u8; 5] = [0xFF, 0xFF, 0xFF, 0xFF, 0x56];
+pub const RULES_REQUEST: [u8; 5] = [0xFF, 0xFF, 0xFF, 0xFF, 0x56];
 
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
@@ -68,19 +60,5 @@ impl Rule {
         }
 
         Ok(rules)
-    }
-}
-
-impl A2SClient {
-    #[cfg(feature = "async")]
-    pub async fn rules<A: ToSocketAddrs>(&self, addr: A) -> Result<Vec<Rule>> {
-        let data = self.do_challenge_request(addr, &RULES_REQUEST).await?;
-        Rule::from_cursor(Cursor::new(data))
-    }
-
-    #[cfg(not(feature = "async"))]
-    pub fn rules<A: ToSocketAddrs>(&self, addr: A) -> Result<Vec<Rule>> {
-        let data = self.do_challenge_request(addr, &RULES_REQUEST)?;
-        Rule::from_cursor(Cursor::new(data))
     }
 }

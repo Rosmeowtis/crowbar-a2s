@@ -1,19 +1,11 @@
-use std::io::Cursor;
-#[cfg(not(feature = "async"))]
-use std::net::ToSocketAddrs;
-
-#[cfg(feature = "async")]
-use tokio::net::ToSocketAddrs;
-
+use crate::errors::{Error, Result};
+use crate::types::ReadCString;
 use byteorder::{LittleEndian, ReadBytesExt};
-
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
+use std::io::Cursor;
 
-use crate::errors::{Error, Result};
-use crate::{A2SClient, ReadCString};
-
-const PLAYER_REQUEST: [u8; 5] = [0xff, 0xff, 0xff, 0xff, 0x55];
+pub const PLAYER_REQUEST: [u8; 5] = [0xff, 0xff, 0xff, 0xff, 0x55];
 
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
@@ -73,19 +65,5 @@ impl Player {
         }
 
         Ok(players)
-    }
-}
-
-impl A2SClient {
-    #[cfg(feature = "async")]
-    pub async fn players<A: ToSocketAddrs>(&self, addr: A) -> Result<Vec<Player>> {
-        let data = self.do_challenge_request(addr, &PLAYER_REQUEST).await?;
-        Player::from_cursor(Cursor::new(data), self.app_id)
-    }
-
-    #[cfg(not(feature = "async"))]
-    pub fn players<A: ToSocketAddrs>(&self, addr: A) -> Result<Vec<Player>> {
-        let data = self.do_challenge_request(addr, &PLAYER_REQUEST)?;
-        Player::from_cursor(Cursor::new(data), self.app_id)
     }
 }

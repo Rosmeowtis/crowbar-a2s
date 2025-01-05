@@ -1,5 +1,5 @@
 #[cfg(feature = "async")]
-use a2s::A2SClient;
+use a2s::A2SClientAsync;
 #[cfg(feature = "async")]
 use futures::future;
 #[cfg(feature = "async")]
@@ -24,7 +24,7 @@ async fn test_async_multiplequeries() {
 #[cfg(feature = "async")]
 #[tokio::test]
 async fn test_async_multipleservers() {
-    let client = A2SClient::new().await.unwrap();
+    let client = A2SClientAsync::new().await.unwrap();
     let addresses = vec![
         "coralie.megabrutal.com:27015",
         "play.lifeisabug.com:27015",

@@ -1,20 +1,12 @@
-use std::convert::TryFrom;
-use std::io::{Cursor, ErrorKind, Write};
-#[cfg(not(feature = "async"))]
-use std::net::ToSocketAddrs;
-
-#[cfg(feature = "async")]
-use tokio::net::ToSocketAddrs;
-
+use crate::errors::{Error, Result};
+use crate::types::ReadCString;
+use byteorder::{LittleEndian, ReadBytesExt};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
+use std::convert::TryFrom;
+use std::io::{Cursor, ErrorKind};
 
-use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
-
-use crate::errors::{Error, Result};
-use crate::{A2SClient, ReadCString};
-
-const INFO_REQUEST: [u8; 25] = [
+pub const INFO_REQUEST: [u8; 25] = [
     0xFF, 0xFF, 0xFF, 0xFF, 0x54, 0x53, 0x6F, 0x75, 0x72, 0x63, 0x65, 0x20, 0x45, 0x6E, 0x67, 0x69,
     0x6E, 0x65, 0x20, 0x51, 0x75, 0x65, 0x72, 0x79, 0x00,
 ];
@@ -338,49 +330,5 @@ impl Info {
             extended_server_info,
             source_tv,
         })
-    }
-}
-
-impl A2SClient {
-    #[cfg(feature = "async")]
-    pub async fn info<A: ToSocketAddrs>(&self, addr: A) -> Result<Info> {
-        let response = self.send(&INFO_REQUEST, &addr).await?;
-
-        let mut packet = Cursor::new(&response);
-
-        let header = packet.read_u8()?;
-        if header == b'A' {
-            let challenge = packet.read_i32::<LittleEndian>()?;
-
-            let mut query = Vec::with_capacity(29);
-            query.write_all(&INFO_REQUEST)?;
-            query.write_i32::<LittleEndian>(challenge)?;
-
-            let data = self.send(&query, addr).await?;
-            Info::from_cursor(Cursor::new(data))
-        } else {
-            Info::from_cursor(Cursor::new(response))
-        }
-    }
-
-    #[cfg(not(feature = "async"))]
-    pub fn info<A: ToSocketAddrs>(&self, addr: A) -> Result<Info> {
-        let response = self.send(&INFO_REQUEST, &addr)?;
-
-        let mut packet = Cursor::new(&response);
-
-        let header = packet.read_u8()?;
-        if header == b'A' {
-            let challenge = packet.read_i32::<LittleEndian>()?;
-
-            let mut query = Vec::with_capacity(29);
-            query.write_all(&INFO_REQUEST)?;
-            query.write_i32::<LittleEndian>(challenge)?;
-
-            let data = self.send(&query, addr)?;
-            Info::from_cursor(Cursor::new(data))
-        } else {
-            Info::from_cursor(Cursor::new(response))
-        }
     }
 }
